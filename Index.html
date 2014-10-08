@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<title>Ebola spread</title>
+	
+<style>
+	h1{
+		font-size: 20px;
+		font-family: 'Guardian Text Egyptian Web', Georgia;
+
+	}
+	.pclass{
+		font-size: 12px;
+		font-family: 'Guardian Agate Sans 1 Web', 'AgateSans', Arial;
+		margin:0;
+		margin-bottom: 5px;
+		width: 100%;
+	}
+	.container{
+		display: inline;
+		width: 50%;
+	}
+	.button-area{
+		width: 100%;
+		display: inline-block;
+	}
+	button{
+		background-color: #ccc;
+		font-family: 'Guardian Agate Sans 1 Web', 'Agate Sans', 'AgateSans', Arial, sans-serif;
+		font-size: 14px;
+		background-color: #cc2b12;
+		border: 1px #fff solid;
+		color: #fff;
+		padding: 5px;
+		outline:0;
+	}
+	.disease-table{
+		display: table;
+		width: 100%;
+	}
+	.disease{
+		font-size: 18px;
+		font-family: 'Guardian Text Egyptian Web', Georgia;
+		display:table-cell;
+		width: 33%;
+	}
+	.disease span{
+		display: block;
+		font-size: 12px;
+		font-family: Arial;
+	}
+	.infection{
+		height: auto;
+		display: inline;
+		width: 100%;
+		float: left;
+		text-align: center;
+		margin:0;
+		transition: opacity 1s ease-in; 
+
+	}
+	.each-row{
+		display: table-cell;
+		width: 33%;
+		padding: 10px;
+		border-right: 1px #ccc solid;
+	}
+	.gia-box{
+		width: 12px;
+		height: 25px;
+		display: inline-block;
+		background-repeat: no-repeat;
+		background-size: 250%;
+		background-position: -11px 0;
+
+	}
+	.init{
+		background-image: url(img/red.svg);
+	}
+	.next{
+		background-image: url(img/yellow.svg);
+	}
+	.onemore{
+		background-image: url(img/orange.svg);	
+	}
+</style>
+</head>
+
+<body>
+<h1>How infectious is Ebola?</h1>
+<div class='pclass'>If one person - let's call them patient zero, colored red below - is infected with a disease, the rate at which they pass it forward will vary greatly depending on the disease.</div>
+<div class='pclass'>Ebola has relatively low transmission potential, what's known as R0 ("r-naught"), the basic reproductive number, in epidemiology. On average, every person infected with Ebola will transfer the disease to two other people. (While some people might infect 3 or 4, many others may stay away from people and infect no one.)</div>
+<div class='pclass'>But other infectious diseases - especially those transmitted through the air, by sneezing or coughing, which Ebola is not - have higher transmission potential. For example, SARS, one of the most memorable recent epidemics has an R0 of around four. That means the disease will spread more quickly through a community, since more people (four, on average) will catch it from each infected patient.</div>
+<div class='pclass'>Then there's Measles, the disease with one of the highest transmission rates of modern times. A patient infected with measles is likely to infect between 12 and 18 other people, making it much harder to contain an epidemic.</div>
+
+<div class='container container-ebola'></div>
+	
+<h1>We have a vaccine against Measles, but not (yet) against Ebola. So how do we fight it?</h1>
+
+<h1>If it's so hard to catch, and we know how to treat it, why has Ebola spread so far in west Africa?</h1>
+
+<h1>What's next?</h1>
+
+<script id='template' type='text/ractive'>
+
+	<div class='button-area'><button class='infect-button button-one' on-click='changeView:{{true}}'>Infect</button>
+	
+	<button class='infect-button button-two' on-click='changeNext:{{true}}'>Infect again</button></div>
+	
+	<div class='disease-table'>
+		{{#each diseases}}
+	    <div class='each-row'>
+	   		<div class='disease'>{{name}} <span class='rnaught'>R0 = {{rnaught}}</span> </div>
+	    	<div class='infection all-infections'>
+	    		<span class='infection initial-infection'>
+	    		{{#each array(init) :i}}
+	    			<div class='gia-box init'></div>
+	    		{{/each}}
+	    		</span>
+	    	{{#if currentView}}
+	    		<span class='infection second-infection' intro='fade'>
+	    		{{#each array(next) :i}}
+	    			<div class='gia-box next' intro='fade:{ delay:{{ i*20 }}, duration:{{ i*2 }} }'></div>
+	    		{{/each}}
+	    		</span>
+	    	{{/if}}
+	    	{{#if nextView}}
+	    		<span class='infection third-infection' intro='fade'>
+	    		{{#each array(onemore) :i}}
+	    			<div class='gia-box onemore' intro='fade:{ delay:{{ i*20 }}, duration:{{ i*2 }} }'></div>
+	    		{{/each}}
+	    		</span>
+	    	{{/if}}
+	    	</div>
+	    </div>
+		{{/each}}  
+	</div>
+
+</script>
+
+<script src='http://cdn.ractivejs.org/latest/ractive.min.js'></script>
+<script src='lib/ractive-transitions-fade.js'></script>
+<script>
+
+var thisDisease = [
+	{ name: 'Ebola', rnaught: 2, init: 1, next: 2, onemore: 4 },
+	{ name: 'SARS', rnaught: 4, init: 1, next: 4, onemore: 16 },
+	{ name: 'Measles', rnaught: 18, init: 1, next: 18, onemore:  324}
+];
+    var ractive = new Ractive({
+      el: '.container',
+
+      template: '#template',
+
+      data: {
+      	diseases: thisDisease,
+      	array: function ( length ) {
+				return new Array( length );
+			}
+      }
+    });
+    
+    ractive.on( 'changeView', function ( event, view ) {
+		  		this.set('currentView', view);
+    });
+    ractive.on( 'changeNext', function ( event, view ) {
+		  		this.set('nextView', view);
+    });
+  </script>
+</body>
